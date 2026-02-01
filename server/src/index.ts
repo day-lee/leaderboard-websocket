@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import type { AthleteData, RaceUpdateMessage } from './types';
+import type { AthleteData, RaceStartMessage, RaceUpdateMessage, AckMessage } from './types';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -38,7 +38,11 @@ wss.on('connection', (ws) => {
     console.log('Client connected');
 
     // Send initial data immediately
-    ws.send(JSON.stringify({ type: 'RACE_START', startTime: raceStartTime }));
+    const raceStartMessage: RaceStartMessage = {
+        type: 'RACE_START',
+        startTime: raceStartTime
+    };          
+    ws.send(JSON.stringify(raceStartMessage));
 
     // Handle messages from the client
     ws.on('message', (message) => {
@@ -48,7 +52,13 @@ wss.on('connection', (ws) => {
         // Simple validation response
         if (msg.startsWith('RENDER_GRAPHIC')) {
             // Simulate an engine acknowledgement
-            ws.send(JSON.stringify({ type: 'ACK', status: 'ON_AIR', message: 'Graphic received' }));
+            const ackMessage: AckMessage = {
+                type: 'ACK',
+                status: 'ON_AIR',
+                message: 'Graphic received'
+            };
+            ws.send(
+                JSON.stringify(ackMessage));
         }
         // Any additional command handling can go here
     });
