@@ -77,7 +77,9 @@ setInterval(() => {
             ...a,
             rank: index + 1,
             // Intentionally omit 'country' occasionally for the 4th place runner to test error handling
-            country: (index === 3 && Math.random() > 0.5) ? undefined : a.country
+            // Intentionally set empty name occasionally for the 8th place runner to test error handling
+            country: (index === 3 && Math.random() > 0.5) ? undefined : a.country,
+            name: (index === 7 && Math.random() > 0.5) ? '' : a.name
         }))
     });
 
