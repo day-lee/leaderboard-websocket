@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
+import type { AthleteData, RaceUpdateMessage } from './types';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -8,7 +9,7 @@ let raceStartTime = Date.now();
 // State variable to track if race is running
 let isRaceActive = true;
 
-const ATHLETES = [
+const ATHLETES: AthleteData[] = [
     { id: '1', name: 'S. White', country: 'USA', bib: '012', speedKmh: 18.5, distance: 0 },
     { id: '2', name: 'M. Smith', country: 'CAN', bib: '014', speedKmh: 17.2, distance: 0 },
     { id: '3', name: 'J. Strife', country: 'MEX', bib: '131', speedKmh: 16.8, distance: 0 },
@@ -49,7 +50,6 @@ wss.on('connection', (ws) => {
             // Simulate an engine acknowledgement
             ws.send(JSON.stringify({ type: 'ACK', status: 'ON_AIR', message: 'Graphic received' }));
         }
-
         // Any additional command handling can go here
     });
 });
@@ -70,7 +70,7 @@ setInterval(() => {
     const sortedAthletes = [...ATHLETES].sort((a, b) => b.distance - a.distance);
 
     // Broadcast to all clients
-    const payload = JSON.stringify({
+    const payload: RaceUpdateMessage ={
         type: 'RACE_UPDATE',
         timestamp: Date.now(),
         athletes: sortedAthletes.map((a, index) => ({
@@ -81,11 +81,11 @@ setInterval(() => {
             country: (index === 3 && Math.random() > 0.5) ? undefined : a.country,
             name: (index === 7 && Math.random() > 0.5) ? '' : a.name
         }))
-    });
+    };
 
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(payload);
+            client.send(JSON.stringify(payload));
         }
     });
 }, UPDATE_INTERVAL_MS);
