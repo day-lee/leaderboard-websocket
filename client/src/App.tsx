@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import type { Athlete } from './types';
 import Header from './components/Header';
 import Leaderboard from './components/Leaderboard';
@@ -10,14 +10,13 @@ function App() {
   const wsRef = useRef<WebSocket | null>(null);
 
   const incompleteCount = athletes.filter(
-    a => !a.country || !a.name || !a.bib
-  ).length;
+    a => !a.country || !a.name || !a.bib).length;
 
-  const sendMessage = (message: string) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(message);
-    }
-  };
+const sendMessage = useCallback((message: string) => {
+  if (wsRef.current?.readyState === WebSocket.OPEN) {
+    wsRef.current.send(message);
+  }
+}, []);
   
   const toggleRace = () => {
     sendMessage('TOGGLE_RACE');
@@ -59,7 +58,7 @@ function App() {
       <Header connectionStatus={connectionStatus} 
               incompleteCount={incompleteCount} 
               isRaceActive={isRaceActive}
-              onToggleRace={toggleRace}   />
+              onToggleRace={toggleRace}/>
       <main>
         <Leaderboard athletes={athletes} onPushGraphic={sendMessage} />
       </main>

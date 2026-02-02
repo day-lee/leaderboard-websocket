@@ -43,6 +43,8 @@ wss.on('connection', (ws) => {
         startTime: raceStartTime
     };          
     ws.send(JSON.stringify(raceStartMessage));
+    // Send current race status to synchronise client state on connection
+    ws.send(JSON.stringify({ type: 'RACE_STATUS', isActive: isRaceActive }));
 
     // Handle messages from the client
     ws.on('message', (message) => {

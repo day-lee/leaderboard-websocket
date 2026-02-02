@@ -20,7 +20,7 @@ function Header({ connectionStatus, incompleteCount, isRaceActive, onToggleRace 
         </div>
           {incompleteCount > 0 && (
         <div className="text-red-500 text-sm">
-          ⚠️ {incompleteCount} incomplete records
+            ⚠️ {incompleteCount} incomplete records
         </div>
       )}
       </div>
