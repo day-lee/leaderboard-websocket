@@ -6,6 +6,7 @@ import Leaderboard from './components/Leaderboard';
 function App() {
   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
   const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const [isRaceActive, setIsRaceActive] = useState(true);
   const wsRef = useRef<WebSocket | null>(null);
 
   const incompleteCount = athletes.filter(
@@ -16,6 +17,10 @@ function App() {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(message);
     }
+  };
+  
+  const toggleRace = () => {
+    sendMessage('TOGGLE_RACE');
   };
 
   useEffect(() => {
@@ -36,8 +41,11 @@ function App() {
           setAthletes(data.athletes);
         }
         if (data.type === 'ACK') {
-        console.log('ACK received:', data.message);
-    }
+          console.log('ACK received:', data.message);
+        }
+        if (data.type === 'RACE_STATUS') {
+          setIsRaceActive(data.isActive);    
+        }
       } catch (error) {
         console.error('Failed to parse message:', error);
       }
@@ -48,7 +56,10 @@ function App() {
 
   return (
     <div className="min-h-screen min-w-screen bg-neutral-900 text-white p-8 font-mono">
-      <Header connectionStatus={connectionStatus} incompleteCount={incompleteCount} />
+      <Header connectionStatus={connectionStatus} 
+              incompleteCount={incompleteCount} 
+              isRaceActive={isRaceActive}
+              onToggleRace={toggleRace}   />
       <main>
         <Leaderboard athletes={athletes} onPushGraphic={sendMessage} />
       </main>
