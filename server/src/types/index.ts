@@ -16,3 +16,31 @@ export interface Athlete {
   distance: number;
   rank: number;
 }
+
+export interface RaceStartMessage {
+  type: 'RACE_START';
+  startTime: number;
+}
+
+export interface RaceUpdateMessage {
+  type: 'RACE_UPDATE';
+  timestamp: number;
+  athletes: Athlete[];
+}
+
+export interface AckMessage {
+  type: 'ACK';
+  status: 'ON_AIR';
+  message: string;
+}
+
+export interface RaceStatusMessage {
+  type: 'RACE_STATUS';
+  isActive: boolean;
+}
+
+export type ServerMessage = 
+  | RaceStartMessage 
+  | RaceUpdateMessage 
+  | AckMessage 
+  | RaceStatusMessage;

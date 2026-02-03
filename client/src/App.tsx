@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { Athlete } from './types';
+import type { Athlete, ServerMessage } from './types';
 import Header from './components/Header';
 import Leaderboard from './components/Leaderboard';
 
@@ -12,11 +12,11 @@ function App() {
   const incompleteCount = athletes.filter(
     a => !a.country || !a.name || !a.bib).length;
 
-const sendMessage = useCallback((message: string) => {
+  const sendMessage = useCallback((message: string) => {
   if (wsRef.current?.readyState === WebSocket.OPEN) {
     wsRef.current.send(message);
   }
-}, []);
+  }, []);
   
   const toggleRace = () => {
     sendMessage('TOGGLE_RACE');
@@ -32,7 +32,7 @@ const sendMessage = useCallback((message: string) => {
 
     ws.onmessage = (event) => {
       try {
-        const data = JSON.parse(event.data);
+        const data: ServerMessage = JSON.parse(event.data);
         if (data.type === 'RACE_START') {
           console.log('Race started at:', new Date(data.startTime).toISOString()); 
         }

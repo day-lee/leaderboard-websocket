@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import type { AthleteData } from './types';
+import type { AthleteData, RaceStartMessage, AckMessage, RaceStatusMessage, RaceUpdateMessage } from './types';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -38,13 +38,14 @@ wss.on('connection', (ws) => {
     console.log('Client connected');
 
     // Send initial data immediately
-    const raceStartMessage = {
+    const raceStartMessage: RaceStartMessage = {
         type: 'RACE_START',
         startTime: raceStartTime
     };          
     ws.send(JSON.stringify(raceStartMessage));
     // Send current race status to synchronise client state on connection
-    ws.send(JSON.stringify({ type: 'RACE_STATUS', isActive: isRaceActive }));
+    const raceStatusMessage: RaceStatusMessage = { type: 'RACE_STATUS', isActive: isRaceActive };
+    ws.send(JSON.stringify(raceStatusMessage));
 
     // Handle messages from the client
     ws.on('message', (message) => {
@@ -54,12 +55,14 @@ wss.on('connection', (ws) => {
         // Simple validation response
         if (msg.startsWith('RENDER_GRAPHIC')) {
             // Simulate an engine acknowledgement
-            ws.send(JSON.stringify({ type: 'ACK', status: 'ON_AIR', message: 'Graphic received' }));
+            const ackMessage: AckMessage = { type: 'ACK', status: 'ON_AIR', message: 'Graphic received' };
+            ws.send(JSON.stringify(ackMessage));
         }
         // Any additional command handling can go here
         if (msg === 'TOGGLE_RACE') {
             isRaceActive = !isRaceActive;
-            ws.send(JSON.stringify({ type: 'RACE_STATUS', isActive: isRaceActive }));
+            const raceStatusMessage: RaceStatusMessage = { type: 'RACE_STATUS', isActive: isRaceActive };
+            ws.send(JSON.stringify(raceStatusMessage));
         }
     });
 });
@@ -80,7 +83,7 @@ setInterval(() => {
     const sortedAthletes = [...ATHLETES].sort((a, b) => b.distance - a.distance);
 
     // Broadcast to all clients
-    const payload = JSON.stringify({
+    const payload: RaceUpdateMessage = {
         type: 'RACE_UPDATE',
         timestamp: Date.now(),
         athletes: sortedAthletes.map((a, index) => ({
@@ -91,11 +94,11 @@ setInterval(() => {
             country: (index === 3 && Math.random() > 0.5) ? undefined : a.country,
             name: (index === 7 && Math.random() > 0.5) ? '' : a.name
         }))
-    });
+    };
 
     wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-            client.send(payload);
+            client.send(JSON.stringify(payload));
         }
     });
 }, UPDATE_INTERVAL_MS);
