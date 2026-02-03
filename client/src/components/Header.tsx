@@ -10,7 +10,7 @@ function Header({ connectionStatus, incompleteCount, isRaceActive, onToggleRace 
     <header className="mb-8 border-b border-neutral-700 h-32 flex">
       <div>
         <h1 className="text-2xl font-bold text-yellow-500">
-          GIRRAPHIC <span className="text-white">LIVE</span>
+          LEADERBOARD<span className="text-white"> LIVE</span>
         </h1>
         <p className="text-sm text-neutral-400">Race Control System</p>
         <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-# Girraphic Software Developer Task
+# Software Developer Task
 
 You are provided with a monorepo containing a backend Node.js WebSocket Server (simulating a race timing engine) and a React frontend (the graphics operator's dashboard). You must build out the frontend to ingest incoming telemetry data, visualise the race order for an operator, and send formatted commands back to the engine.
 

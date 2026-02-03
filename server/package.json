@@ -1,5 +1,5 @@
 {
-  "name": "girraphic-task-server",
+  "name": "leaderboard-task-server",
   "version": "0.0.0",
   "scripts": {
     "dev": "tsx watch src/index.ts"
