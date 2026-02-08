@@ -1,58 +1,33 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import type { Athlete, ServerMessage } from './types';
+import { useRaceSocket } from './hooks/useRaceSocket';
 import Header from './components/Header';
 import Leaderboard from './components/Leaderboard';
 
+/*
+Creating a custom hook
+1. which data to move? 
+2. create a new file
+3. move state and ref 
+4. move useEffect & handler
+5. define what to return
+6. Apply to App component 
+*/
+
 function App() {
-  const [connectionStatus, setConnectionStatus] = useState('Disconnected');
-  const [athletes, setAthletes] = useState<Athlete[]>([]);
-  const [isRaceActive, setIsRaceActive] = useState(true);
-  const wsRef = useRef<WebSocket | null>(null);
+
+  const {
+    connectionStatus,
+    athletes,
+    isRaceActive,
+    sendMessage
+  } = useRaceSocket('ws://localhost:8080')
 
   const incompleteCount = athletes.filter(
     a => !a.country || !a.name || !a.bib).length;
-
-  const sendMessage = useCallback((message: string) => {
-  if (wsRef.current?.readyState === WebSocket.OPEN) {
-    wsRef.current.send(message);
-  }
-  }, []);
   
   const toggleRace = () => {
     sendMessage('TOGGLE_RACE');
   };
-
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8080');
-    wsRef.current = ws;
-
-    ws.onopen = () => setConnectionStatus('Connected');
-    ws.onclose = () => setConnectionStatus('Disconnected');
-    ws.onerror = () => setConnectionStatus('Disconnected');
-
-    ws.onmessage = (event) => {
-      try {
-        const data: ServerMessage = JSON.parse(event.data);
-        if (data.type === 'RACE_START') {
-          console.log('Race started at:', new Date(data.startTime).toISOString()); 
-        }
-        if (data.type === 'RACE_UPDATE') {
-          setAthletes(data.athletes);
-        }
-        if (data.type === 'ACK') {
-          console.log('ACK received:', data.message);
-        }
-        if (data.type === 'RACE_STATUS') {
-          setIsRaceActive(data.isActive);    
-        }
-      } catch (error) {
-        console.error('Failed to parse message:', error);
-      }
-    };
-
-    return () => ws.close();
-  }, []);
-
+  
   return (
     <div className="min-h-screen min-w-screen bg-neutral-900 text-white p-8 font-mono">
       <Header connectionStatus={connectionStatus} 

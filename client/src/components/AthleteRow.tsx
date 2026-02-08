@@ -15,7 +15,6 @@ function AthleteRow({ athlete, gap, onPushGraphic }: AthleteRowProps) {
     const message = `RENDER_GRAPHIC*SCENE=LOWER_THIRD*NAME=${athlete.name || 'N/A'}*COUNTRY=${athlete.country || 'N/A'}*GAP=${gap}`;
     onPushGraphic(message);
   };
-
   return (
     <>
       <div className={rowStyle}>{athlete.rank}</div>

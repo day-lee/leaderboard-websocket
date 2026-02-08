@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react';
 import type { Athlete } from '../types';
 import AthleteRow from './AthleteRow';
 
@@ -9,16 +10,17 @@ interface LeaderboardProps {
 }
 
 function Leaderboard({ athletes, onPushGraphic }: LeaderboardProps) {
-  if (athletes.length === 0) {
-    return <div>Waiting for data...</div>;
-  }
 
   const leaderDistance = athletes[0]?.distance ?? 0;
 
-  const formatGap = (athlete: Athlete): string => {
+  const formatGap = useCallback((athlete: Athlete): string => {
     if (athlete.rank === 1) return 'Leader';
     return `+${(leaderDistance - athlete.distance).toFixed(1)}m`;
-  };
+  }, [leaderDistance]);
+
+    if (athletes.length === 0) {
+    return <div>Waiting for data...</div>;
+  }
 
   return (
     <div className="grid grid-cols-[80px_100px_60px_1fr_100px_120px_120px_140px] px-4 max-w-5xl mx-auto">
@@ -45,4 +47,4 @@ function Leaderboard({ athletes, onPushGraphic }: LeaderboardProps) {
   );
 }
 
-export default Leaderboard;
+export default memo(Leaderboard);
