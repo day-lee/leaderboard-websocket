@@ -2,16 +2,6 @@ import { useRaceSocket } from './hooks/useRaceSocket';
 import Header from './components/Header';
 import Leaderboard from './components/Leaderboard';
 
-/*
-Creating a custom hook
-1. which data to move? 
-2. create a new file
-3. move state and ref 
-4. move useEffect & handler
-5. define what to return
-6. Apply to App component 
-*/
-
 function App() {
 
   const {
